@@ -1,0 +1,5 @@
+CREATE TABLE url_encurtado (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    longUrl VARCHAR(2048) NOT NULL,
+    shortenedUrl VARCHAR(255) NOT NULL
+);
