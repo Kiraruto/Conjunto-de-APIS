@@ -3,21 +3,14 @@ package io.github.kiraruto.encurtadorurl.domain.clima;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "Clima")
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 public class ApiClima {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,13 +19,13 @@ public class ApiClima {
     private String city;
 
     @JsonProperty("temperatura")
-    private double temperature;
+    private Double temperature;
 
     @JsonProperty("umidade")
-    private double humidity;
+    private Double humidity;
 
     @JsonProperty("velocidadeVento")
-    private double wind;
+    private Double wind;
 
     @JsonProperty("descricao")
     private String description;
@@ -42,7 +35,7 @@ public class ApiClima {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
 
-    public ApiClima(String city, double temperature, double humidity, double wind, String description, LocalDate formattedDate) {
+    public ApiClima(String city, Double temperature, Double humidity, Double wind, String description, LocalDate formattedDate) {
         this.city = city;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -58,5 +51,68 @@ public class ApiClima {
         this.wind = wind;
         this.description = description;
         this.date = LocalDate.now();
+    }
+
+    public ApiClima(Long id, String city, Double temperature, Double humidity, Double wind, String description, LocalDate date) {
+        this.id = id;
+        this.city = city;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.wind = wind;
+        this.description = description;
+        this.date = date;
+    }
+
+    public ApiClima() {
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public Double getHumidity() {
+        return humidity;
+    }
+
+    public Double getWind() {
+        return wind;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
+    }
+
+    public void setHumidity(Double humidity) {
+        this.humidity = humidity;
+    }
+
+    public void setWind(Double wind) {
+        this.wind = wind;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

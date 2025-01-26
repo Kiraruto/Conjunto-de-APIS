@@ -1,19 +1,17 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/url
-    username: KirarutoAdmin
-    password: Kira22@#
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    flyway:
-      enabled: false
-      locations: classpath:db/migration
-    jpa:
-      hibernate:
-        ddl-auto: none
+    url: url
+    username: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+  properties:
+    hibernate:
+      format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   error:
@@ -26,12 +24,19 @@ logging:
 
 climaReal:
   api:
-    key: 258d2cd81806ad54e581eefe0264b65d
+    key: key
     endpoint: https://api.openweathermap.org/data/2.5/weather
 
 climaHistorical:
   api:
-    key: VSAV69LEC5WW9GDJV6XU77DBX
+    key: key
     endpoint: https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/
+
+Roteiro:
+  api:
+    key: key-c0S1JrM
+    apiId: apiId
+    endpointDiscover: https://discover.search.hereapi.com/v1/discover
+    endpointGeocoding: https://geocode.search.hereapi.com/v1/geocode
 
 
