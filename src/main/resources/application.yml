@@ -7,7 +7,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   properties:
     hibernate:
       format_sql: true
@@ -34,7 +34,7 @@ climaHistorical:
 
 Roteiro:
   api:
-    key: key-c0S1JrM
+    key: key
     apiId: apiId
     endpointDiscover: https://discover.search.hereapi.com/v1/discover
     endpointGeocoding: https://geocode.search.hereapi.com/v1/geocode

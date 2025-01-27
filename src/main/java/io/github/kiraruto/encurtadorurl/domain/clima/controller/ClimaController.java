@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/clima")
 public class ClimaController {
@@ -34,7 +36,13 @@ public class ClimaController {
         return serviceClima.getClima();
     }
 
+    @GetMapping("/{local}/{data}")
+    public ResponseEntity getLocalDataClima(@PathVariable String local, @PathVariable LocalDate data) {
+        return ResponseEntity.ok(serviceClima.getClimaLocalData(local, data));
+    }
+
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity deleteClimas(@PathVariable Long id) {
         return serviceClima.delete(id);
     }

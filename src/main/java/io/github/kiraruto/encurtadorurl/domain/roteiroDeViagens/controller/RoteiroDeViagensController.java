@@ -1,13 +1,11 @@
 package io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.controller;
 
 import io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.dto.DTORoteiroCityEData;
+import io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.dto.DTORoteiroCompleto;
 import io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.service.RoteiroDeViagensService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/roteiro")
@@ -24,5 +22,22 @@ public class RoteiroDeViagensController {
     public ResponseEntity postRoteiroDeViagens(@RequestBody DTORoteiroCityEData dtoRoteiroCityEData) {
         var save = roteiroDeViagensService.save(dtoRoteiroCityEData);
         return ResponseEntity.ok(save);
+    }
+
+    @GetMapping
+    public ResponseEntity getRoteiros() {
+        return ResponseEntity.ok(roteiroDeViagensService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getIdRoteiros(@PathVariable Long id) {
+        var save = roteiroDeViagensService.findRoteiroById(id);
+        return ResponseEntity.ok(new DTORoteiroCompleto(save));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteRoteiros(@PathVariable Long id) {
+        roteiroDeViagensService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

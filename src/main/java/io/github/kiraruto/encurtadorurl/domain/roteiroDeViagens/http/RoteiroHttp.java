@@ -3,12 +3,13 @@ package io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.http;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.DiaRoteiro;
 import io.github.kiraruto.encurtadorurl.domain.roteiroDeViagens.RoteiroDeViagens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -16,8 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-@Service
+@Component
 public class RoteiroHttp {
 
     private static final Logger logger = LoggerFactory.getLogger(RoteiroHttp.class);
@@ -33,7 +35,7 @@ public class RoteiroHttp {
 
     private double[] obterCoordenadasDaCidade(String cidade) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = String.format("%s?q=%s&apikey=%s", ENDPOINT_GEOCODING, cidade, apikey);
+        String url = String.format("%s?q=%s&apikey=%s", ENDPOINT_GEOCODING, cidade.toLowerCase().trim(), apikey);
 
         try {
             String response = restTemplate.getForObject(url, String.class);
@@ -71,8 +73,10 @@ public class RoteiroHttp {
 
     public RoteiroDeViagens criarRoteiro(String cidade, int dias) {
         double[] coordenadas = obterCoordenadasDaCidade(cidade);
-        String latitudeStr = String.format("%.5f", coordenadas[0]);
-        String longitudeStr = String.format("%.5f", coordenadas[1]);
+
+        String latitudeStr = String.format(Locale.US, "%.5f", coordenadas[0]);
+        String longitudeStr = String.format(Locale.US, "%.5f", coordenadas[1]);
+
 
         String coordenadasFormatadas = latitudeStr + "," + longitudeStr;
 
@@ -82,11 +86,7 @@ public class RoteiroHttp {
                     ENDPOINT_DISCOVER, cidade, coordenadasFormatadas, apikey
             );
 
-
             URL url = new URL(urlString);
-
-            System.out.println("URL: " + url.toString());
-            System.out.println("Latitude: " + latitudeStr + ", Longitude: " + longitudeStr);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> resposta = restTemplate.getForEntity(url.toURI(), String.class);
@@ -120,7 +120,7 @@ public class RoteiroHttp {
 
 
     private RoteiroDeViagens dividirAtividadesEmDias(String cidade, int dias, List<String> atividades) {
-        List<RoteiroDeViagens.DiaRoteiro> roteiroDias = new ArrayList<>();
+        List<DiaRoteiro> roteiroDias = new ArrayList<>();
         int atividadesPorDia = atividades.size() / dias;
         int sobra = atividades.size() % dias;
 
@@ -130,13 +130,14 @@ public class RoteiroHttp {
             List<String> atividadesDia = new ArrayList<>(atividades.subList(index, index + atividadesDiaCount));
             index += atividadesDiaCount;
 
-            roteiroDias.add(new RoteiroDeViagens.DiaRoteiro(i + 1, atividadesDia));
+            roteiroDias.add(new DiaRoteiro(i + 1, atividadesDia));
         }
 
         RoteiroDeViagens roteiro = new RoteiroDeViagens();
-        roteiro.setDestination(cidade);
+        roteiro.setDestination(cidade.replaceAll("%20", " "));
         roteiro.setDays(dias);
         roteiro.setRoteiro(roteiroDias);
+
         return roteiro;
     }
 }

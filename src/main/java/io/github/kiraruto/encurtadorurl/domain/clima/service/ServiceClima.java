@@ -10,13 +10,14 @@ import io.github.kiraruto.encurtadorurl.domain.clima.repository.ApiClimaReposito
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ServiceClima {
 
     private final HttpClima httpClima;
-    private ApiClimaRepository apiClimaRepository;
+    private final ApiClimaRepository apiClimaRepository;
 
     public ServiceClima(HttpClima httpClima, ApiClimaRepository apiClimaRepository) {
         this.httpClima = httpClima;
@@ -30,7 +31,7 @@ public class ServiceClima {
     }
 
     public ApiClima saveHistorico(DTOClimaNomeCidadeEData dtoClimaNomeCidadeEData) {
-        var save =  httpClima.getWeatherHistorical(dtoClimaNomeCidadeEData.city(), dtoClimaNomeCidadeEData.date());
+        var save = httpClima.getWeatherHistorical(dtoClimaNomeCidadeEData.city(), dtoClimaNomeCidadeEData.date());
         apiClimaRepository.save(save);
         return save;
     }
@@ -50,6 +51,14 @@ public class ServiceClima {
         List<DTOClimaCompletoSemId> collect = DTOClimaCompletoSemId.fromClimaList(saveGetClima);
 
         return ResponseEntity.ok(collect);
+
+    }
+
+    public ApiClima getClimaLocalData(String local, LocalDate date) {
+        var save = apiClimaRepository.findByCityAndDate(local, date);
+
+        return save;
+
 
     }
 }

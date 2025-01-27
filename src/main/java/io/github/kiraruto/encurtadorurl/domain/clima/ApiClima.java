@@ -71,45 +71,44 @@ public class ApiClima {
         return city;
     }
 
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public Double getHumidity() {
-        return humidity;
-    }
-
-    public Double getWind() {
-        return wind;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Double getTemperature() {
+        return temperature;
     }
 
     public void setTemperature(Double temperature) {
         this.temperature = temperature;
     }
 
+    public Double getHumidity() {
+        return humidity;
+    }
+
     public void setHumidity(Double humidity) {
         this.humidity = humidity;
+    }
+
+    public Double getWind() {
+        return wind;
     }
 
     public void setWind(Double wind) {
         this.wind = wind;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 
     public void setDate(LocalDate date) {
