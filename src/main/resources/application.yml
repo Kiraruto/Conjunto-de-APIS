@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: url
+    username: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  properties:
+    hibernate:
+      format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  error:
+    include-stacktrace: never
+  port: 8081
+
+logging:
+  level:
+    org.springframework.core: DEBUG
+
+climaReal:
+  api:
+    key: key
+    endpoint: https://api.openweathermap.org/data/2.5/weather
+
+climaHistorical:
+  api:
+    key: key
+    endpoint: https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/
+
+Roteiro:
+  api:
+    key: key
+    apiId: apiId
+    endpointDiscover: https://discover.search.hereapi.com/v1/discover
+    endpointGeocoding: https://geocode.search.hereapi.com/v1/geocode
+
+jwt:
+  SECRET_KEY: SECRET_KEY
+  ISSUER: ISSUER
