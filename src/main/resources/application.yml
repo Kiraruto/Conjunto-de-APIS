@@ -18,13 +18,9 @@ server:
     include-stacktrace: never
   port: 8081
 
-logging:
-  level:
-    org.springframework.core: DEBUG
-
 climaReal:
   api:
-    key: key
+    key: 258d2cd81806ad54e581eefe0264b65d
     endpoint: https://api.openweathermap.org/data/2.5/weather
 
 climaHistorical:
