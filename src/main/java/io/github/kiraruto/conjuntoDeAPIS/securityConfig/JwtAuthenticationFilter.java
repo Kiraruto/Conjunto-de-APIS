@@ -1,7 +1,7 @@
-package io.github.kiraruto.conjuntoDeAPIS.model.securityConfig;
+package io.github.kiraruto.conjuntoDeAPIS.securityConfig;
 
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.JWTService;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.UserService;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.JWTService;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

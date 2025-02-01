@@ -1,7 +1,7 @@
-package io.github.kiraruto.conjuntoDeAPIS.model.securityConfig;
+package io.github.kiraruto.conjuntoDeAPIS.securityConfig;
 
 import io.github.kiraruto.conjuntoDeAPIS.model.users.role.UserRole;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.UserService;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,10 +34,15 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/auth/admin").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/auth/admin").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/auth/user").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/auth/user/put/{id}/desactive").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/auth/user/put/{id}/active").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/auth/user/getAll").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/refresh").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .anyRequest().authenticated())
 
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.List;
+
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -21,14 +23,15 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception{
-        User adminAccount = userRepository.findByRole(UserRole.ADMIN);
-        if (null == adminAccount) {
+        List<User> adminAccount = userRepository.findByRole(UserRole.ADMIN);
+        if (adminAccount.isEmpty()) {
             User user = new User();
 
             user.setEmail("admin@gmail.com");
             user.setUsername("admin");
             user.setPassword(new BCryptPasswordEncoder().encode("admin"));
             user.setUserRole(UserRole.ADMIN);
+            user.setActive(true);
 
             userRepository.save(user);
         }

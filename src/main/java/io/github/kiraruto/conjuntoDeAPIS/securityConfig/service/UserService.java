@@ -1,4 +1,4 @@
-package io.github.kiraruto.conjuntoDeAPIS.model.users.service;
+package io.github.kiraruto.conjuntoDeAPIS.securityConfig.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 

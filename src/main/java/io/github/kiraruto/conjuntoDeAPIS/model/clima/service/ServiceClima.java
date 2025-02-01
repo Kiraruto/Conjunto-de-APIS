@@ -7,10 +7,10 @@ import io.github.kiraruto.conjuntoDeAPIS.model.clima.dto.DTOClimaNomeCidadeEData
 import io.github.kiraruto.conjuntoDeAPIS.model.clima.exception.ResourceNotFoundException;
 import io.github.kiraruto.conjuntoDeAPIS.model.clima.http.HttpClima;
 import io.github.kiraruto.conjuntoDeAPIS.model.clima.repository.ApiClimaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,41 +24,53 @@ public class ServiceClima {
         this.apiClimaRepository = apiClimaRepository;
     }
 
-    public ApiClima saveReal(DTOClimaNome dtoClimaNome) {
-        var save = httpClima.getWeatherReal(dtoClimaNome.city());
-        apiClimaRepository.save(save);
-        return save;
-    }
-
-    public ApiClima saveHistorico(DTOClimaNomeCidadeEData dtoClimaNomeCidadeEData) {
-        var save = httpClima.getWeatherHistorical(dtoClimaNomeCidadeEData.city(), dtoClimaNomeCidadeEData.date());
-        apiClimaRepository.save(save);
-        return save;
-    }
-
-    public ResponseEntity delete(Long id) {
-        if (!apiClimaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Recurso com ID " + id + " não encontrado.");
+    public ResponseEntity<?> saveReal(DTOClimaNome dtoClimaNome) {
+        try {
+            var save = httpClima.getWeatherReal(dtoClimaNome.city());
+            apiClimaRepository.save(save);
+            return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao salvar dados do clima em tempo real: " + e.getMessage());
         }
-
-        apiClimaRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity getClima() {
-        var saveGetClima = apiClimaRepository.findAll();
-
-        List<DTOClimaCompletoSemId> collect = DTOClimaCompletoSemId.fromClimaList(saveGetClima);
-
-        return ResponseEntity.ok(collect);
-
+    public ResponseEntity<?> saveHistorico(DTOClimaNomeCidadeEData dtoClimaNomeCidadeEData) {
+        try {
+            var save = httpClima.getWeatherHistorical(dtoClimaNomeCidadeEData.city().replace(" ", "%20"), dtoClimaNomeCidadeEData.date());
+            apiClimaRepository.save(save);
+            return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao salvar dados históricos do clima: " + e.getMessage());
+        }
     }
 
-    public ApiClima getClimaLocalData(String local, LocalDate date) {
-        var save = apiClimaRepository.findByCityAndDate(local, date);
+    public ResponseEntity<?> delete(Long id) {
+        try {
+            if (!apiClimaRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Recurso com ID " + id + " não encontrado.");
+            }
 
-        return save;
+            apiClimaRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao excluir recurso: " + e.getMessage());
+        }
+    }
 
+    public ResponseEntity<?> getClima() {
+        try {
+            var saveGetClima = apiClimaRepository.findAll();
 
+            List<DTOClimaCompletoSemId> collect = DTOClimaCompletoSemId.fromClimaList(saveGetClima);
+
+            return ResponseEntity.ok(collect);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao buscar dados do clima: " + e.getMessage());
+        }
     }
 }

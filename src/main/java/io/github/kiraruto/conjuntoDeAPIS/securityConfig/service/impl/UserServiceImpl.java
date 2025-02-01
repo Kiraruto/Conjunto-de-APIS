@@ -1,7 +1,7 @@
-package io.github.kiraruto.conjuntoDeAPIS.model.users.service.impl;
+package io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.impl;
 
 import io.github.kiraruto.conjuntoDeAPIS.model.users.repository.UserRepository;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.UserService;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

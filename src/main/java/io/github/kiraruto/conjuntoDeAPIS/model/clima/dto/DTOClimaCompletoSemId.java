@@ -15,7 +15,7 @@ public record DTOClimaCompletoSemId(String city,
 
     public static List<DTOClimaCompletoSemId> fromClimaList(List<ApiClima> saveGet) {
         return saveGet.stream()
-                .map(a -> new DTOClimaCompletoSemId(a.getCity(), a.getTemperature(), a.getHumidity(), a.getWind(), a.getDescription(), a.getDate()))
+                .map(a -> new DTOClimaCompletoSemId(a.getCity().replace("%20", " "), a.getTemperature(), a.getHumidity(), a.getWind(), a.getDescription(), a.getDate()))
                 .collect(Collectors.toList());
     }
 }

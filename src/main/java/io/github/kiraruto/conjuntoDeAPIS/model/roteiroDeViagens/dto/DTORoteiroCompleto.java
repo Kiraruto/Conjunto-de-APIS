@@ -5,11 +5,12 @@ import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.RoteiroDeViagens
 
 import java.util.List;
 
-public record DTORoteiroCompleto(String destination,
+public record DTORoteiroCompleto(Long id,
+                                 String destination,
                                  Integer days,
                                  List<DiaRoteiro> roteiro) {
     public DTORoteiroCompleto(RoteiroDeViagens save) {
-        this(save.getDestination(), save.getDays(), save.getRoteiro());
+        this(save.getId(), save.getDestination(), save.getDays(), save.getRoteiro());
     }
 }
 

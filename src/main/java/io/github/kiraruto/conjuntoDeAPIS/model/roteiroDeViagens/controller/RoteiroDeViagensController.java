@@ -1,7 +1,6 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.controller;
 
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.dto.DTORoteiroCityEData;
-import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.dto.DTORoteiroCompleto;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.service.RoteiroDeViagensService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -20,24 +19,21 @@ public class RoteiroDeViagensController {
     @PostMapping
     @Transactional
     public ResponseEntity postRoteiroDeViagens(@RequestBody DTORoteiroCityEData dtoRoteiroCityEData) {
-        var save = roteiroDeViagensService.save(dtoRoteiroCityEData);
-        return ResponseEntity.ok(save);
+        return roteiroDeViagensService.save(dtoRoteiroCityEData);
     }
 
     @GetMapping
     public ResponseEntity getRoteiros() {
-        return ResponseEntity.ok(roteiroDeViagensService.findAll());
+        return roteiroDeViagensService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getIdRoteiros(@PathVariable Long id) {
-        var save = roteiroDeViagensService.findRoteiroById(id);
-        return ResponseEntity.ok(new DTORoteiroCompleto(save));
+        return  roteiroDeViagensService.findRoteiroById(id);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteRoteiros(@PathVariable Long id) {
-        roteiroDeViagensService.delete(id);
-        return ResponseEntity.noContent().build();
+        return roteiroDeViagensService.delete(id);
     }
 }

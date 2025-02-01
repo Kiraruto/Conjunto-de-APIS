@@ -17,7 +17,7 @@ import java.util.Optional;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -35,6 +35,8 @@ public class User implements UserDetails {
     @Column(name = "role")
     private UserRole role;
 
+    private Boolean active;
+
     public User(Long id, String username, String email, String password, UserRole role) {
         this.id = id;
         this.username = username;
@@ -46,7 +48,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public void atualizarUser(DTOTransform dtoTransform) {
+    public void atualizarUserInAdmin(DTOTransform dtoTransform) {
         if (dtoTransform.email() != null) {
             this.email = dtoTransform.email();
         }
@@ -54,6 +56,29 @@ public class User implements UserDetails {
         this.role = UserRole.ADMIN;
     }
 
+    public void atualizarAdminInUser(DTOTransform dtoTransform) {
+        if (dtoTransform.email() != null) {
+            this.email = dtoTransform.email();
+        }
+
+        this.role = UserRole.USER;
+    }
+
+    public void atualizarActiveTrueToFalse(User user) {
+        if (user.getActive() != null) {
+            this.id = user.id;
+        }
+
+        this.active = false;
+    }
+
+    public void atualizarActiveFalseToTrue(User user) {
+        if (user.getActive() != null) {
+            this.id = user.id;
+        }
+
+        this.active = true;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -112,5 +137,25 @@ public class User implements UserDetails {
 
     public void setUserRole(UserRole userRole) {
         this.role = userRole;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

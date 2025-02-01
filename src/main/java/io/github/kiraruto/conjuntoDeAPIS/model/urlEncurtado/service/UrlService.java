@@ -8,7 +8,7 @@ import io.github.kiraruto.conjuntoDeAPIS.model.urlEncurtado.dto.DTOURl;
 import io.github.kiraruto.conjuntoDeAPIS.model.urlEncurtado.dto.DTOUrlLonga;
 import io.github.kiraruto.conjuntoDeAPIS.model.urlEncurtado.http.UrlHttp;
 import io.github.kiraruto.conjuntoDeAPIS.model.urlEncurtado.repository.UrlRepository;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.AuthenticationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,27 +19,43 @@ public class UrlService {
 
     private final UrlHttp urlHttp;
     private final UrlRepository urlRepository;
-    private final AuthenticationService authenticationService;
 
-    public UrlService(UrlHttp urlHttp, UrlRepository urlRepository, AuthenticationService authenticationService) {
+    public UrlService(UrlHttp urlHttp, UrlRepository urlRepository) {
         this.urlHttp = urlHttp;
         this.urlRepository = urlRepository;
-        this.authenticationService = authenticationService;
     }
 
-    public ResponseEntity save(DTOUrlLonga dtoUrlLong) {
-        String saveUrlShorten = urlHttp.urlShortenerClient(dtoUrlLong.Long());
-        urlRepository.save(new UrlEncurtado(dtoUrlLong.Long(), minima(saveUrlShorten)));
+    public ResponseEntity<?> save(DTOUrlLonga dtoUrlLong) {
+        try {
+            String saveUrlShorten = urlHttp.urlShortenerClient(dtoUrlLong.Long());
+            if (saveUrlShorten == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao encurtar a URL: resposta nula do serviço externo.");
+            }
 
-        return ResponseEntity.ok(saveUrlShorten);
+            String shortenedUrl = minima(saveUrlShorten);
+            if (shortenedUrl.equals("Erro ao processar a URL")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao processar a resposta do serviço de encurtamento de URL.");
+            }
+
+            urlRepository.save(new UrlEncurtado(dtoUrlLong.Long(), shortenedUrl));
+            return ResponseEntity.ok(shortenedUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao salvar a URL encurtada: " + e.getMessage());
+        }
     }
 
     public ResponseEntity<?> get() {
-        var saveUrlClima = urlRepository.findAll();
-
-        List<DTOURl> collect = DTOURl.fromUrlList(saveUrlClima);
-
-        return ResponseEntity.ok(collect);
+        try {
+            var saveUrlClima = urlRepository.findAll();
+            List<DTOURl> collect = DTOURl.fromUrlList(saveUrlClima);
+            return ResponseEntity.ok(collect);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao buscar URLs encurtadas: " + e.getMessage());
+        }
     }
 
     private String minima(String response) {
@@ -47,15 +63,14 @@ public class UrlService {
 
         if (response != null) {
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonResponse = null;
-
             try {
-                jsonResponse = objectMapper.readTree(response);
+                JsonNode jsonResponse = objectMapper.readTree(response);
+                if (jsonResponse.has("urlEncurtada")) {
+                    shortenedUrl = jsonResponse.get("urlEncurtada").asText();
+                }
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                shortenedUrl = "Erro ao processar a URL";
             }
-
-            shortenedUrl = jsonResponse.get("urlEncurtada").asText();
         }
         return shortenedUrl;
     }

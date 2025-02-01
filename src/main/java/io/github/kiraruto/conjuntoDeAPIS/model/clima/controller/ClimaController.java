@@ -35,9 +35,4 @@ public class ClimaController {
     public ResponseEntity getClimas() {
         return serviceClima.getClima();
     }
-
-    @GetMapping("/{local}/{data}")
-    public ResponseEntity getLocalDataClima(@PathVariable String local, @PathVariable LocalDate data) {
-        return ResponseEntity.ok(serviceClima.getClimaLocalData(local, data));
-    }
 }

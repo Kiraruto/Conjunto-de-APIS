@@ -18,9 +18,14 @@ server:
     include-stacktrace: never
   port: 8081
 
+logging:
+  level:
+    org.flywaydb.core: DEBUG
+
+
 climaReal:
   api:
-    key: 258d2cd81806ad54e581eefe0264b65d
+    key: key
     endpoint: https://api.openweathermap.org/data/2.5/weather
 
 climaHistorical:
@@ -37,4 +42,4 @@ Roteiro:
 
 jwt:
   SECRET_KEY: SECRET_KEY
-  ISSUER: ISSUER
+  ISSUER: ISSUER-ISSUER

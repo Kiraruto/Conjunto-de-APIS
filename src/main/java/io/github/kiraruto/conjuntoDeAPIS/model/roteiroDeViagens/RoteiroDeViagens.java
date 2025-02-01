@@ -57,6 +57,10 @@ public class RoteiroDeViagens {
         this.roteiro = roteiro;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "RoteiroDeViagens{" +

@@ -5,6 +5,7 @@ import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.RefreshTokenRequest;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SignUpRequest;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SigninRequest;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.service.AuthenticationService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +26,38 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest) {
-        return ResponseEntity.ok(authenticationService.signin(signinRequest));
+        return authenticationService.signin(signinRequest);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest RefreshTokenRequest) {
-        return ResponseEntity.ok(authenticationService.refreshToken(RefreshTokenRequest));
+        return authenticationService.refreshToken(RefreshTokenRequest);
     }
 
     @PutMapping("/admin")
     public ResponseEntity<?> transformUserInAdmin(@RequestBody DTOTransform dtoUserComplete) {
-        return ResponseEntity.ok(authenticationService.transform(dtoUserComplete));
+        return authenticationService.transformUserInAdmin(dtoUserComplete);
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<?> transformAdminInUser(@RequestBody DTOTransform dtoUserComplete) {
+        return authenticationService.transformAdminInUser(dtoUserComplete);
+    }
+
+    @PutMapping("/user/put/{id}/desactive")
+    @Transactional
+    public ResponseEntity<?> desactive(@PathVariable Long id) {
+        return authenticationService.desactiveByIdTrueToFalse(id);
+    }
+
+    @PutMapping("/user/put/{id}/active")
+    @Transactional
+    public ResponseEntity<?> active(@PathVariable Long id) {
+        return authenticationService.activeByIdFalseToTrue(id);
+    }
+
+    @GetMapping("/user/getAll")
+    public ResponseEntity<?> getAllUsers() {
+        return authenticationService.allUsers();
     }
 }

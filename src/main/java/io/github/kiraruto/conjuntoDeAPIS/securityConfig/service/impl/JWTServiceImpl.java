@@ -1,6 +1,6 @@
-package io.github.kiraruto.conjuntoDeAPIS.model.users.service.impl;
+package io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.impl;
 
-import io.github.kiraruto.conjuntoDeAPIS.model.users.service.JWTService;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.JWTService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,7 +24,7 @@ public class JWTServiceImpl implements JWTService {
     public String generateToken(UserDetails userDetails) {
             return Jwts.builder().setSubject(userDetails.getUsername())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                    .setExpiration(getExpirationInMinutes(120))
                     .signWith(getSiginkey(), SignatureAlgorithm.HS256)
                     .compact();
     }
@@ -32,7 +32,7 @@ public class JWTServiceImpl implements JWTService {
     public String generateRefreshToken(Map<String, Object> exgtraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(exgtraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 604800000))
+                .setExpiration(getExpirationInDays(7))
                 .signWith(getSiginkey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -69,4 +69,13 @@ public class JWTServiceImpl implements JWTService {
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
+
+    private Date getExpirationInMinutes(int minutes) {
+        return new Date(System.currentTimeMillis() + 1000L * 60 * minutes);
+    }
+
+    private Date getExpirationInDays(int days) {
+        return new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * days);
+    }
+
 }
