@@ -1,9 +1,6 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.users.service;
 
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.DTOTransform;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.RefreshTokenRequest;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SignUpRequest;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SigninRequest;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
@@ -22,5 +19,9 @@ public interface AuthenticationService {
 
     ResponseEntity<?> activeByIdFalseToTrue(Long id);
 
+    ResponseEntity<?> updateUser(UpdateUser signUpRequest, Long id);
+
     ResponseEntity<?> allUsers();
+
+    ResponseEntity<?> getUserEmail(String email);
 }

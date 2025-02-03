@@ -4,7 +4,9 @@ import io.github.kiraruto.conjuntoDeAPIS.model.clima.ApiClima;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface ApiClimaRepository extends JpaRepository<ApiClima, Long> {
-    ApiClima findByCityAndDate(String local, LocalDate date);
+    List<ApiClima> findByCityAndDate(String local, LocalDate date);
 }

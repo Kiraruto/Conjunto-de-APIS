@@ -1,7 +1,7 @@
 package io.github.kiraruto.conjuntoDeAPIS.securityConfig;
 
 import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.JWTService;
-import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.UserService;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        if (StringUtils.isEmpty(authHeader) || !org.apache.commons.lang3.StringUtils.startsWith(authHeader, "Bearer ")){
+        if (!StringUtils.hasText(authHeader) || !org.apache.commons.lang3.StringUtils.startsWith(authHeader, "Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }

@@ -2,6 +2,7 @@ package io.github.kiraruto.conjuntoDeAPIS.model.clima;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.User;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -35,6 +36,21 @@ public class ApiClima {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public ApiClima(Long id, User user, LocalDate date, String description, Double wind, Double temperature, String city, Double humidity) {
+        this.id = id;
+        this.user = user;
+        this.date = date;
+        this.description = description;
+        this.wind = wind;
+        this.temperature = temperature;
+        this.city = city;
+        this.humidity = humidity;
+    }
+
     public ApiClima(String city, Double temperature, Double humidity, Double wind, String description, LocalDate formattedDate) {
         this.city = city;
         this.temperature = temperature;
@@ -51,16 +67,6 @@ public class ApiClima {
         this.wind = wind;
         this.description = description;
         this.date = LocalDate.now();
-    }
-
-    public ApiClima(Long id, String city, Double temperature, Double humidity, Double wind, String description, LocalDate date) {
-        this.id = id;
-        this.city = city;
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.wind = wind;
-        this.description = description;
-        this.date = date;
     }
 
     public ApiClima() {
@@ -113,5 +119,13 @@ public class ApiClima {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

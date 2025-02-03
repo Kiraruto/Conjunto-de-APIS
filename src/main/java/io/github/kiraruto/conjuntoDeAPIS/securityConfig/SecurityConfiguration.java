@@ -1,10 +1,9 @@
 package io.github.kiraruto.conjuntoDeAPIS.securityConfig;
 
 import io.github.kiraruto.conjuntoDeAPIS.model.users.role.UserRole;
-import io.github.kiraruto.conjuntoDeAPIS.securityConfig.service.UserService;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,8 +21,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private UserService userService;
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/auth/login",
+            "/refresh"
+    };
+    private static final String[] ADMIN_ENDPOINTS = {
+            "/auth/register",
+            "/auth/admin/**",
+            "/auth/user/**",
+            "/auth/user/put/{id}/desactive",
+            "/auth/user/put/{id}/active",
+            "/auth/user/getAll",
+            "/auth/user/atualizar/{id}",
+            "/auth/user/get/{email}"
+    };
+
+    private static final String[] ADIMN_USER_ENDPOINTS = {
+        "/clima/{local}/{data}"
+    };
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserService userService;
 
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter, UserService userService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -34,17 +54,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST, "/auth/register").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/auth/admin").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/auth/user").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/auth/user/put/{id}/desactive").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/auth/user/put/{id}/active").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/auth/user/getAll").hasAuthority(UserRole.ADMIN.name())
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/refresh").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                        .requestMatchers(ADMIN_ENDPOINTS).hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers(ADIMN_USER_ENDPOINTS).hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated())
-
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -62,7 +75,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

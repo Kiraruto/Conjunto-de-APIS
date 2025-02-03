@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -170,6 +171,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    public ResponseEntity<?> updateUser(UpdateUser signUpRequest, Long id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            if (!userOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recurso com ID " + id + " não encontrado.");
+            }
+
+            User user = userOptional.get();
+            user.atualizarUsuario(signUpRequest);
+
+            userRepository.save(user);
+
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao Atualizar usuário: " + e.getMessage());
+        }
+    }
+
     public ResponseEntity<?> allUsers() {
         try {
             var saveGetUsers = userRepository.findAllByActiveIsTrue();
@@ -179,6 +198,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResponseEntity.ok(collect);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar usuários: " + e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> getUserEmail(String email) {
+        try {
+            var saveGetUserByEmail = userRepository.findByEmail(email);
+
+            if (saveGetUserByEmail.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            return ResponseEntity.ok(saveGetUserByEmail);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar usuário: " + e.getMessage());
         }
     }
 }

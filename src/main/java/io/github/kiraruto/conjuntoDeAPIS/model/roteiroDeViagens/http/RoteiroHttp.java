@@ -46,27 +46,22 @@ public class RoteiroHttp {
             JsonNode itemsNode = rootNode.path("items");
             if (!itemsNode.isArray() || itemsNode.isEmpty()) {
                 String errorMessage = "Nenhum resultado encontrado para a cidade: " + cidade;
-                logger.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }
 
             JsonNode positionNode = itemsNode.get(0).path("position");
             if (positionNode.isMissingNode()) {
                 String errorMessage = "Campo 'position' não encontrado no JSON de resposta.";
-                logger.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }
 
             double lat = positionNode.path("lat").asDouble();
             double lng = positionNode.path("lng").asDouble();
 
-            logger.info("Coordenadas: {}, {}", lat, lng);
             return new double[]{lat, lng};
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            logger.error("Erro ao consumir a API de geocoding: {} - {}", e.getStatusCode(), e.getMessage());
             throw new RuntimeException("Erro ao obter coordenadas para a cidade", e);
         } catch (Exception e) {
-            logger.error("Erro inesperado ao consumir a API de geocoding: {}", e.getMessage(), e);
             throw new RuntimeException("Erro ao obter coordenadas para a cidade", e);
         }
     }

@@ -6,16 +6,17 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record DTOClimaCompletoSemId(String city,
+public record DTOClimaCompletoSemIdUserId(String city,
                                     Double temperature,
                                     Double humidity,
                                     Double wind,
                                     String description,
-                                    LocalDate date) {
+                                    LocalDate date,
+                                    Long user) {
 
-    public static List<DTOClimaCompletoSemId> fromClimaList(List<ApiClima> saveGet) {
+    public static List<DTOClimaCompletoSemIdUserId> fromClimaList(List<ApiClima> saveGet) {
         return saveGet.stream()
-                .map(a -> new DTOClimaCompletoSemId(a.getCity().replace("%20", " "), a.getTemperature(), a.getHumidity(), a.getWind(), a.getDescription(), a.getDate()))
+                .map(a -> new DTOClimaCompletoSemIdUserId(a.getCity().replace("%20", " "), a.getTemperature(), a.getHumidity(), a.getWind(), a.getDescription(), a.getDate(), a.getUser().getId()))
                 .collect(Collectors.toList());
     }
 }

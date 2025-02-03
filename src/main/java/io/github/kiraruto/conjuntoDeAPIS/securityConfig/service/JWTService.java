@@ -1,5 +1,6 @@
 package io.github.kiraruto.conjuntoDeAPIS.securityConfig.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Map;
@@ -11,8 +12,6 @@ public interface JWTService {
     String generateToken(UserDetails userDetails);
 
     boolean isTokenValid(String token, UserDetails userDetails);
-
-    boolean isTokenValid2(String token, String email);
 
     String generateRefreshToken(Map<String, Object> exgtraClaims, UserDetails userDetails);
 }

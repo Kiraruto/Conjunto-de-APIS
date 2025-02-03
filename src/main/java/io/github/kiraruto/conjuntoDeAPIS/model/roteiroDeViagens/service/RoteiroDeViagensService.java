@@ -1,32 +1,46 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.service;
 
-import io.github.kiraruto.conjuntoDeAPIS.model.clima.exception.ResourceNotFoundException;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.RoteiroDeViagens;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.dto.DTORoteiroCityEData;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.dto.DTORoteiroCompleto;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.http.RoteiroHttp;
 import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.repository.RoteiroDeViagensRepository;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.User;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoteiroDeViagensService {
 
     private final RoteiroHttp roteiroHttp;
     private final RoteiroDeViagensRepository roteiroDeViagensRepository;
+    private final UserRepository userRepository;
 
-    public RoteiroDeViagensService(RoteiroDeViagensRepository roteiroDeViagensRepository, RoteiroHttp roteiroHttp) {
+    public RoteiroDeViagensService(RoteiroDeViagensRepository roteiroDeViagensRepository, RoteiroHttp roteiroHttp, UserRepository userRepository) {
         this.roteiroDeViagensRepository = roteiroDeViagensRepository;
         this.roteiroHttp = roteiroHttp;
+        this.userRepository = userRepository;
     }
 
-    public ResponseEntity<?> save(DTORoteiroCityEData dtoRoteiroCityEData) {
+    public ResponseEntity<?> save(DTORoteiroCityEData dtoRoteiroCityEData, String authentication) {
         try {
             var saveRoteiro = roteiroHttp.criarRoteiro(dtoRoteiroCityEData.destination().toLowerCase().replaceAll(" ", "%20"), dtoRoteiroCityEData.days());
             roteiroDeViagensRepository.save(saveRoteiro);
+
+            Optional<User> userOptional = userRepository.findByEmail(authentication);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado.");
+            }
+
+            User user = userOptional.get();
+            user.addRoteiro(saveRoteiro);
+            userRepository.save(user);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(saveRoteiro);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -37,7 +51,10 @@ public class RoteiroDeViagensService {
     public ResponseEntity<?> findAll() {
         try {
             List<RoteiroDeViagens> roteiros = roteiroDeViagensRepository.findAll();
-            return ResponseEntity.ok(roteiros);
+
+            List<DTORoteiroCompleto> dtoRoteiro = DTORoteiroCompleto.fromRoteiroList(roteiros);
+
+            return ResponseEntity.ok(dtoRoteiro);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao buscar roteiros de viagens: " + e.getMessage());

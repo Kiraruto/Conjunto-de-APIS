@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -61,11 +62,6 @@ public class JWTServiceImpl implements JWTService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public boolean isTokenValid2(String token, String email) {
-        final String username = extractUserName(token);
-        return (username.equals(email) && !isTokenExpired(token));
-    }
-
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
@@ -77,5 +73,4 @@ public class JWTServiceImpl implements JWTService {
     private Date getExpirationInDays(int days) {
         return new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * days);
     }
-
 }

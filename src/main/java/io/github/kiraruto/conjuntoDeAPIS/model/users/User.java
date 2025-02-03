@@ -1,16 +1,22 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.users;
 
+import io.github.kiraruto.conjuntoDeAPIS.model.clima.ApiClima;
+import io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens.RoteiroDeViagens;
+import io.github.kiraruto.conjuntoDeAPIS.model.urlEncurtado.UrlEncurtado;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.DTOTransform;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.UpdateUser;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.role.UserRole;
+import io.github.kiraruto.conjuntoDeAPIS.securityConfig.SecurityConfiguration;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "usuario")
@@ -37,15 +43,31 @@ public class User implements UserDetails {
 
     private Boolean active;
 
-    public User(Long id, String username, String email, String password, UserRole role) {
+    @OneToMany(mappedBy = "user")
+    private List<UrlEncurtado> urlsEncurtadas;
+
+    @OneToMany(mappedBy = "user")
+    private List<ApiClima> climas;
+
+    @OneToMany(mappedBy = "user")
+    private List<RoteiroDeViagens> roteiro;
+
+    public User(Long id, String username, String email, String password, UserRole role, Boolean active, List<UrlEncurtado> urlsEncurtadas, List<ApiClima> climas) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.active = active;
+        this.urlsEncurtadas = urlsEncurtadas;
+        this.climas = climas;
     }
 
     public User() {
+    }
+
+    public User(Long saveId) {
+        addUrlEncurtada(new UrlEncurtado(saveId));
     }
 
     public void atualizarUserInAdmin(DTOTransform dtoTransform) {
@@ -78,6 +100,44 @@ public class User implements UserDetails {
         }
 
         this.active = true;
+    }
+
+    public void addUrlEncurtada(UrlEncurtado urlEncurtado) {
+        urlEncurtado.setUser(this);
+        urlsEncurtadas.add(urlEncurtado);
+    }
+
+    public void addClima(ApiClima apiClima) {
+        apiClima.setUser(this);
+        climas.add(apiClima);
+    }
+
+    public void addRoteiro(RoteiroDeViagens roteiroDeViagens) {
+        roteiroDeViagens.setUser(this);
+        roteiro.add(roteiroDeViagens);
+    }
+
+    public void atualizarUsuario(UpdateUser signUpRequest) {
+
+        if (signUpRequest.username() != null) {
+            this.username = signUpRequest.username();
+        }
+
+        if (signUpRequest.email() != null) {
+            this.email = signUpRequest.email();
+        }
+
+        if (signUpRequest.password() != null) {
+            this.password = new BCryptPasswordEncoder().encode(signUpRequest.password());
+        }
+
+        if (signUpRequest.userRole() != null) {
+            this.role = signUpRequest.userRole();
+        }
+
+        if (signUpRequest.active() != null) {
+            this.active = signUpRequest.active();
+        }
     }
 
     @Override
@@ -158,4 +218,6 @@ public class User implements UserDetails {
     public Long getId() {
         return id;
     }
+
+
 }

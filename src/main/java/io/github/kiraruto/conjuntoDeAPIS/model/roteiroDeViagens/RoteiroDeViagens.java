@@ -1,5 +1,6 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.roteiroDeViagens;
 
+import io.github.kiraruto.conjuntoDeAPIS.model.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 
@@ -7,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "roteiro_de_viagens")
-@AllArgsConstructor
 public class RoteiroDeViagens {
 
     @Id
@@ -24,14 +24,19 @@ public class RoteiroDeViagens {
     @JoinColumn(name = "roteiro_de_viagens_id")
     private List<DiaRoteiro> roteiro;
 
-    public RoteiroDeViagens(String cidade, int dias, List<DiaRoteiro> roteiroDias) {
-        this.destination = cidade;
-        this.days = dias;
-        this.roteiro = roteiroDias;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public RoteiroDeViagens(Long id, String destination, Integer days, List<DiaRoteiro> roteiro, User user) {
+        this.id = id;
+        this.destination = destination;
+        this.days = days;
+        this.roteiro = roteiro;
+        this.user = user;
     }
 
-    public RoteiroDeViagens() {
-    }
+    public RoteiroDeViagens() {}
 
     public String getDestination() {
         return destination;
@@ -69,5 +74,13 @@ public class RoteiroDeViagens {
                 ", days=" + days +
                 ", roteiro=" + roteiro +
                 '}';
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

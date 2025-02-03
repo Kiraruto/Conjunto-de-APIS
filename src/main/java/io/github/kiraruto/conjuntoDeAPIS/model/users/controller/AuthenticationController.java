@@ -1,9 +1,6 @@
 package io.github.kiraruto.conjuntoDeAPIS.model.users.controller;
 
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.DTOTransform;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.RefreshTokenRequest;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SignUpRequest;
-import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.SigninRequest;
+import io.github.kiraruto.conjuntoDeAPIS.model.users.dto.*;
 import io.github.kiraruto.conjuntoDeAPIS.model.users.service.AuthenticationService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -56,8 +53,17 @@ public class AuthenticationController {
         return authenticationService.activeByIdFalseToTrue(id);
     }
 
+    @PutMapping("/user/atualizar/{id}")
+    @Transactional
+    public ResponseEntity<?> update(@RequestBody UpdateUser signUpRequest, @PathVariable Long id) {
+        return authenticationService.updateUser(signUpRequest, id);
+    }
+
     @GetMapping("/user/getAll")
     public ResponseEntity<?> getAllUsers() {
         return authenticationService.allUsers();
     }
+
+    @GetMapping("/user/get/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) { return authenticationService.getUserEmail(email);}
 }

@@ -1,0 +1,9 @@
+CREATE TABLE Clima (
+    id SERIAL PRIMARY KEY,
+    cidade VARCHAR(255) NOT NULL,
+    temperatura DOUBLE PRECISION NOT NULL,
+    umidade DOUBLE PRECISION NOT NULL,
+    velocidadeVento DOUBLE PRECISION NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    data DATE NOT NULL
+);
